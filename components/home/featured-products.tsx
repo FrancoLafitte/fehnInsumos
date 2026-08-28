@@ -1,13 +1,11 @@
-"use client"
-
-import { products, formatPrice } from "@/lib/products"
+import { getPublicProducts } from "@/lib/products-server"
 import { ProductCard } from "@/components/product-card"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 
-export function FeaturedProducts() {
-  // Get first 8 products that are in stock
+export async function FeaturedProducts() {
+  const products = await getPublicProducts()
   const featuredProducts = products.filter((p) => p.inStock).slice(0, 8)
 
   return (

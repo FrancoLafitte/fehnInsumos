@@ -4,9 +4,11 @@ import { ProductsFilter } from "@/components/products/products-filter"
 import { categories } from "@/lib/products"
 import type { Metadata } from "next"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Productos | FEHN Insumos para Cerámica",
-  description: "Explorá nuestro catálogo completo de insumos para cerámica. Arcillas, esmaltes, herramientas, bizcochos, óxidos y contramoldes.",
+  description: "Explorá nuestro catálogo completo de insumos para cerámica con todas las categorías disponibles.",
 }
 
 interface ProductsPageProps {

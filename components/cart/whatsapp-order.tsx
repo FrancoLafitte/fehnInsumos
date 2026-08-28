@@ -10,7 +10,7 @@ import { formatPrice } from "@/lib/products"
 
 const WHATSAPP_NUMBER = "2923523294"
 
-export function WhatsAppCheckout() {
+export function WhatsAppOrder() {
   const { items, getTotal, clearCart } = useCart()
   const [name, setName] = useState("")
   const [notes, setNotes] = useState("")
@@ -39,10 +39,11 @@ export function WhatsAppCheckout() {
     return encodeURIComponent(message)
   }
 
-  const handleCheckout = () => {
+  const handleSendWhatsApp = () => {
     const message = generateWhatsAppMessage()
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`
     window.open(whatsappUrl, "_blank")
+    clearCart()
   }
 
   return (
@@ -69,8 +70,8 @@ export function WhatsAppCheckout() {
       </div>
 
       <Button
-        onClick={handleCheckout}
-        className="w-full gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white"
+        onClick={handleSendWhatsApp}
+        className="w-full gap-2 bg-[#25D366] text-white hover:bg-[#128C7E]"
         size="lg"
       >
         <svg

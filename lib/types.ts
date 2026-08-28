@@ -13,8 +13,17 @@ export type Category =
   | "esmaltes"
   | "herramientas"
   | "bizcochos"
-  | "oxidos-pigmentos"
   | "contramoldes"
+  | "engobes-rahue"
+  | "stencils"
+  | "transfers"
+  | "quimica"
+  | "pigmentos"
+  | "oxidos"
+  | "cortantes"
+  | "sellos"
+  | "barbotinas"
+  | "sellos-de-goma"
 
 export interface CartItem {
   product: Product

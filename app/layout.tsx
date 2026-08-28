@@ -11,8 +11,8 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'FEHN | Insumos para Cerámica',
-  description: 'Tu tienda de insumos para cerámica. Arcillas, esmaltes, herramientas, bizcochos, óxidos y contramoldes. Enviamos a todo el país.',
-  keywords: ['cerámica', 'arcilla', 'esmaltes', 'herramientas cerámica', 'bizcochos', 'óxidos', 'contramoldes'],
+  description: 'Tu tienda de insumos para cerámica con catálogo completo por categorías. Enviamos a todo el país.',
+  keywords: ['cerámica', 'arcilla', 'esmaltes', 'herramientas cerámica', 'categorías cerámica', 'catálogo cerámica'],
   generator: 'v0.app',
   icons: {
     icon: [

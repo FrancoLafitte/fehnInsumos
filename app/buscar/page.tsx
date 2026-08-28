@@ -1,14 +1,25 @@
-"use client"
-
-import { useSearchParams } from "next/navigation"
-import { products, categories } from "@/lib/products"
-import { ProductCard } from "@/components/product-card"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import type { Metadata } from "next"
+import { Button } from "@/components/ui/button"
+import { ProductCard } from "@/components/product-card"
+import { categories } from "@/lib/products"
+import { getPublicProducts } from "@/lib/products-server"
 
-export default function SearchPage() {
-  const searchParams = useSearchParams()
-  const query = searchParams.get("q") || ""
+export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "Buscar productos | FEHN Insumos para Cerámica",
+  description: "Buscá productos cargados por el admin en FEHN Insumos para Cerámica.",
+}
+
+interface SearchPageProps {
+  searchParams: Promise<{ q?: string }>
+}
+
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const params = await searchParams
+  const query = params.q?.trim() || ""
+  const products = query ? await getPublicProducts() : []
 
   const searchResults = query
     ? products.filter(
@@ -25,29 +36,29 @@ export default function SearchPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header */}
       <div className="mb-8">
         <Link href="/">
           <Button variant="outline" size="sm" className="mb-4">
             ← Volver al inicio
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
+        <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
           Resultados de búsqueda
         </h1>
         <p className="text-lg text-muted-foreground">
-          {query && (
+          {query ? (
             <>
               Búsqueda: <span className="font-semibold text-foreground">"{query}"</span>
             </>
+          ) : (
+            "Escribí un término de búsqueda para empezar"
           )}
         </p>
       </div>
 
-      {/* Results */}
       {searchResults.length > 0 ? (
         <div>
-          <p className="text-sm text-muted-foreground mb-6">
+          <p className="mb-6 text-sm text-muted-foreground">
             Se encontraron <span className="font-bold">{searchResults.length}</span> producto
             {searchResults.length !== 1 ? "s" : ""}
           </p>
@@ -58,15 +69,14 @@ export default function SearchPage() {
             ))}
           </div>
 
-          {/* Group by category */}
           <div className="mt-12 border-t pt-12">
-            <h2 className="text-2xl font-bold mb-8">Por categoría</h2>
+            <h2 className="mb-8 text-2xl font-bold">Por categoría</h2>
             <div className="grid gap-8">
               {Array.from(new Set(searchResults.map((p) => p.category))).map((category) => {
                 const categoryProducts = searchResults.filter((p) => p.category === category)
                 return (
                   <div key={category}>
-                    <h3 className="text-lg font-semibold mb-4">
+                    <h3 className="mb-4 text-lg font-semibold">
                       {getCategoryName(category)} ({categoryProducts.length})
                     </h3>
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -81,8 +91,8 @@ export default function SearchPage() {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-6">
+        <div className="py-12 text-center">
+          <p className="mb-6 text-muted-foreground">
             {query
               ? `No se encontraron productos que coincidan con "${query}"`
               : "Ingresa un término de búsqueda para comenzar"}

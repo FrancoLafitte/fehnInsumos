@@ -1,16 +1,12 @@
-"use client"
-
-import { products, getProductsByCategory } from "@/lib/products"
+import { getPublicProducts } from "@/lib/products-server"
 import { ProductCard } from "@/components/product-card"
 
 interface ProductsGridProps {
   categoryId?: string
 }
 
-export function ProductsGrid({ categoryId }: ProductsGridProps) {
-  const filteredProducts = categoryId
-    ? getProductsByCategory(categoryId)
-    : products
+export async function ProductsGrid({ categoryId }: ProductsGridProps) {
+  const filteredProducts = await getPublicProducts(categoryId)
 
   if (filteredProducts.length === 0) {
     return (

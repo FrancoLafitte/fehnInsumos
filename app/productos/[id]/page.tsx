@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation"
-import { getProductById, getCategoryById, formatPrice, products } from "@/lib/products"
+import { getCategoryById } from "@/lib/products"
+import { getPublicProductById } from "@/lib/products-server"
 import { ProductDetail } from "@/components/products/product-detail"
 import type { Metadata } from "next"
+
+export const dynamic = "force-dynamic"
 
 interface ProductPageProps {
   params: Promise<{ id: string }>
@@ -9,7 +12,7 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id } = await params
-  const product = getProductById(id)
+  const product = await getPublicProductById(id)
 
   if (!product) {
     return {
@@ -23,15 +26,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   }
 }
 
-export function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id,
-  }))
-}
-
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params
-  const product = getProductById(id)
+  const product = await getPublicProductById(id)
 
   if (!product) {
     notFound()

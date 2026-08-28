@@ -22,13 +22,15 @@ export function CategoriesSection() {
               href={`/productos?categoria=${category.id}`}
               className="group relative overflow-hidden rounded-lg"
             >
-              <div className="aspect-[4/3] w-full">
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+              <div className="relative aspect-[4/3] w-full">
+                {category.image ? (
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : null}
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-transparent" />
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-6">

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/context/cart-context"
 import { formatPrice } from "@/lib/products"
-import { WhatsAppCheckout } from "@/components/cart/whatsapp-checkout"
+import { WhatsAppOrder } from "@/components/cart/whatsapp-order"
 
 export function CartContent() {
   const { items, updateQuantity, removeItem, getTotal } = useCart()
@@ -151,7 +151,7 @@ export function CartContent() {
               </span>
             </div>
 
-            <WhatsAppCheckout />
+            <WhatsAppOrder />
           </CardContent>
         </Card>
       </div>

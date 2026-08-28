@@ -20,12 +20,14 @@ export function ProductCard({ product }: ProductCardProps) {
     <Card className="group overflow-hidden">
       <Link href={`/productos/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          {product.image ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : null}
           {!product.inStock && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/80">
               <span className="text-sm font-medium text-muted-foreground">

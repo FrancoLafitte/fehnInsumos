@@ -1,28 +1,42 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { products } from "@/lib/products"
+import type { Product } from "@/lib/types"
 
 export function ProductSearch() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isOpen, setIsOpen] = useState(false)
-  const [suggestions, setSuggestions] = useState<typeof products>([])
+  const [allProducts, setAllProducts] = useState<Product[]>([])
+  const [suggestions, setSuggestions] = useState<Product[]>([])
   const router = useRouter()
 
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query)
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await fetch("/api/public/products")
+        const json = await res.json()
+        setAllProducts(json.data || [])
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }, [])
 
-    if (query.trim().length === 0) {
+  useEffect(() => {
+    const query = searchQuery.trim()
+
+    if (!query) {
       setSuggestions([])
+      setIsOpen(false)
       return
     }
 
     const queryLower = query.toLowerCase()
-    const filtered = products.filter(
+    const filtered = allProducts.filter(
       (product) =>
         product.name.toLowerCase().includes(queryLower) ||
         product.description.toLowerCase().includes(queryLower) ||
@@ -31,7 +45,7 @@ export function ProductSearch() {
 
     setSuggestions(filtered.slice(0, 5))
     setIsOpen(true)
-  }, [])
+  }, [searchQuery, allProducts])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,7 +79,7 @@ export function ProductSearch() {
             type="search"
             placeholder="Buscar productos..."
             value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 pr-10"
             autoComplete="off"
           />

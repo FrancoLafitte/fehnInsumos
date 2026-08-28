@@ -2,16 +2,53 @@
 
 import Link from "next/link"
 import { ShoppingCart, Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useCart } from "@/context/cart-context"
 import { Button } from "@/components/ui/button"
 import { ProductSearch } from "@/components/product-search"
-import { categories } from "@/lib/products"
+
+type Category = {
+  id: string
+  name: string
+}
+
+const FEATURED_CATEGORY_IDS = ["arcillas", "esmaltes", "herramientas", "bizcochos"]
 
 export function Header() {
   const { getItemCount } = useCart()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
   const itemCount = getItemCount()
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/public/categories")
+        const json = await res.json()
+
+        if (!isMounted) return
+
+        setCategories(Array.isArray(json?.data) ? json.data : [])
+      } catch (error) {
+        console.error("[Header] No se pudieron cargar las categorías", error)
+      }
+    }
+
+    fetchCategories()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const featuredCategories = categories
+    .filter((category) => FEATURED_CATEGORY_IDS.includes(category.id))
+    .concat(
+      categories.filter((category) => !FEATURED_CATEGORY_IDS.includes(category.id))
+    )
+    .slice(0, 4)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -71,22 +108,74 @@ export function Header() {
 
       {/* Navigation bar */}
       <nav className="hidden border-t border-border lg:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/productos"
-            className="py-3 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-          >
-            Todos los Productos
-          </Link>
-          {categories.slice(0, 4).map((category) => (
-            <Link
-              key={category.id}
-              href={`/productos?categoria=${category.id}`}
-              className="py-3 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-            >
-              {category.name}
-            </Link>
-          ))}
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="group relative after:absolute after:left-0 after:top-full after:h-4 after:w-full after:content-['']">
+              <Link
+                href="/productos"
+                className="inline-flex h-10 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              >
+                Todos los Productos
+              </Link>
+
+              {categories.length > 0 && (
+                <div className="pointer-events-none invisible absolute left-0 top-full z-50 mt-0 w-[min(760px,calc(100vw-2rem))] translate-y-1 rounded-3xl border border-border bg-background/98 p-4 opacity-0 shadow-2xl backdrop-blur transition-all duration-200 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+                  <div className="mb-3 flex items-center justify-between gap-4 border-b border-border pb-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        Categorías
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Explorá todos los grupos disponibles
+                      </p>
+                    </div>
+                    <Link
+                      href="/productos"
+                      className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      Ver catálogo completo
+                    </Link>
+                  </div>
+
+                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/productos?categoria=${category.id}`}
+                        className="group flex items-center justify-between rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm font-medium text-foreground/80 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
+                      >
+                        <span>{category.name}</span>
+                        <span className="text-xs text-muted-foreground transition-colors group-hover:text-primary">
+                          Ver
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="hidden flex-wrap items-center gap-2 lg:flex">
+              {featuredCategories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/productos?categoria=${category.id}`}
+                  className="inline-flex h-10 items-center rounded-full border border-border/70 bg-background px-4 text-sm font-medium text-foreground/75 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:text-primary hover:shadow-md"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="hidden items-center gap-2 text-xs font-medium text-muted-foreground lg:flex">
+            <span className="rounded-full border border-border px-3 py-1.5">
+              Cerámica artesanal
+            </span>
+            <span className="rounded-full border border-border px-3 py-1.5">
+              Envíos a todo el país
+            </span>
+          </div>
         </div>
       </nav>
 
