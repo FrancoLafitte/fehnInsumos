@@ -12,17 +12,31 @@ export default function AdminIndexPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Link
-          href="/admin/productos/nuevo"
-          className="group rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500"
-        >
-          <div className="text-sm font-medium uppercase tracking-wide text-sky-700">Productos</div>
-          <div className="mt-2 text-xl font-semibold text-slate-900">Agregar producto</div>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Cargar nombre, precio, categoría e imágenes para publicar un nuevo insumo.
-          </p>
-          <span className="mt-4 inline-flex text-sm font-medium text-sky-700 group-hover:underline">Ir al formulario</span>
-        </Link>
+        <div className="space-y-4">
+          <Link
+            href="/admin/productos/nuevo"
+            className="group block rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+          >
+            <div className="text-sm font-medium uppercase tracking-wide text-sky-700">Productos</div>
+            <div className="mt-2 text-xl font-semibold text-slate-900">Agregar producto</div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Cargar nombre, precio, categoría e imágenes para publicar un nuevo insumo.
+            </p>
+            <span className="mt-4 inline-flex text-sm font-medium text-sky-700 group-hover:underline">Ir al formulario</span>
+          </Link>
+
+          <Link
+            href="/admin/productos"
+            className="group block rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-red-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <div className="text-sm font-medium uppercase tracking-wide text-red-700">Productos</div>
+            <div className="mt-2 text-xl font-semibold text-slate-900">Gestionar productos</div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Revisá el catálogo y eliminá productos que ya no estén disponibles.
+            </p>
+            <span className="mt-4 inline-flex text-sm font-medium text-red-700 group-hover:underline">Ver catálogo</span>
+          </Link>
+        </div>
 
         <Link
           href="/admin/categorias"

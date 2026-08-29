@@ -43,12 +43,18 @@ export function CartContent() {
                     href={`/productos/${item.product.id}`}
                     className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md bg-muted"
                   >
-                    <Image
-                      src={item.product.image}
-                      alt={item.product.name}
-                      fill
-                      className="object-cover"
-                    />
+                    {item.product.image ? (
+                      <Image
+                        src={item.product.image}
+                        alt={item.product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-slate-100 text-[10px] font-medium uppercase tracking-wide text-slate-500">
+                        FEHN
+                      </div>
+                    )}
                   </Link>
 
                   {/* Product Info */}

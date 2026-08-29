@@ -1,11 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { ShoppingCart, Menu, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { ShoppingCart, Menu, X, UserRound } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import { useCart } from "@/context/cart-context"
 import { Button } from "@/components/ui/button"
 import { ProductSearch } from "@/components/product-search"
+import supabaseBrowser from "@/lib/supabaseClientBrowser"
+import { ADMIN_EMAILS, normalizeEmail } from "@/lib/admin-config"
 
 type Category = {
   id: string
@@ -17,7 +19,10 @@ const FEATURED_CATEGORY_IDS = ["arcillas", "esmaltes", "herramientas", "bizcocho
 export function Header() {
   const { getItemCount } = useCart()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
+  const [session, setSession] = useState<any>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
   const itemCount = getItemCount()
 
   useEffect(() => {
@@ -38,8 +43,26 @@ export function Header() {
 
     fetchCategories()
 
+    const { data: authListener } = supabaseBrowser.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession)
+    })
+
+    supabaseBrowser.auth.getSession().then(({ data }) => {
+      if (isMounted) setSession(data.session)
+    })
+
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+
     return () => {
       isMounted = false
+      authListener.subscription.unsubscribe()
+      document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
 
@@ -49,6 +72,18 @@ export function Header() {
       categories.filter((category) => !FEATURED_CATEGORY_IDS.includes(category.id))
     )
     .slice(0, 4)
+
+  const isLoggedIn = Boolean(session?.user)
+  const userEmail = session?.user?.email || ""
+  const isAdmin = userEmail
+    ? ADMIN_EMAILS.some((allowedEmail) => normalizeEmail(allowedEmail) === normalizeEmail(userEmail))
+    : false
+  const userInitial = userEmail ? userEmail.trim().charAt(0).toUpperCase() : "U"
+
+  async function handleLogout() {
+    setMenuOpen(false)
+    await supabaseBrowser.auth.signOut()
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -70,8 +105,59 @@ export function Header() {
             <ProductSearch />
           </div>
 
-          {/* Cart & Mobile Menu */}
+          {/* Cart, login and Mobile Menu */}
           <div className="flex items-center gap-2">
+            {!isLoggedIn && (
+              <Link href="/login">
+                <Button variant="outline" size="sm" className="hidden items-center gap-2 sm:inline-flex">
+                  <UserRound className="h-4 w-4" />
+                  Ingresá
+                </Button>
+              </Link>
+            )}
+
+            {isLoggedIn && (
+              <div ref={menuRef} className="relative">
+                <button
+                  type="button"
+                  title={userEmail}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white shadow-sm"
+                  aria-label={userEmail}
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                >
+                  {userInitial}
+                </button>
+
+                {menuOpen && (
+                  <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-border bg-background p-2 shadow-xl">
+                    <Link
+                      href="/perfil"
+                      className="block rounded-lg px-3 py-2 text-sm text-foreground transition hover:bg-muted"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Ver perfil
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="block rounded-lg px-3 py-2 text-sm text-foreground transition hover:bg-muted"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Panel admin
+                      </Link>
+                    )}
+                    <button
+                      type="button"
+                      className="mt-1 block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50"
+                      onClick={handleLogout}
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <Link href="/carrito">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
@@ -183,6 +269,16 @@ export function Header() {
       {mobileMenuOpen && (
         <div className="border-t border-border bg-background lg:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8">
+            {!isLoggedIn && (
+              <Link
+                href="/login"
+                className="mb-2 inline-flex items-center gap-2 py-3 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <UserRound className="h-4 w-4" />
+                Ingresá
+              </Link>
+            )}
             <Link
               href="/productos"
               className="py-3 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
