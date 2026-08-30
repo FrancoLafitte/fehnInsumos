@@ -3,6 +3,13 @@
 import React, { useState } from "react"
 import { normalizeUserMessage } from "@/lib/es-messages"
 
+type SubcategoryOption = {
+  id: string
+  name: string
+  categoria_principal_id?: string | null
+  categoriaprincipal_id?: string | null
+}
+
 export default function NewProductPage() {
   const [form, setForm] = useState({
     id: "",
@@ -12,7 +19,7 @@ export default function NewProductPage() {
     category: "",
     images: "",
   })
-  const [categories, setCategories] = useState<Array<{id:string;name:string}>>([])
+  const [categories, setCategories] = useState<SubcategoryOption[]>([])
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -86,9 +93,10 @@ export default function NewProductPage() {
   React.useEffect(() => {
     ;(async () => {
       try {
-        const res = await fetch("/api/public/categories")
+        const res = await fetch("/api/admin/categories")
         const json = await res.json()
-        setCategories(json.data || [])
+        const list = Array.isArray(json?.data) ? json.data : []
+        setCategories(list)
       } catch (e) {
         console.error(e)
       }
@@ -129,7 +137,7 @@ export default function NewProductPage() {
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="category" className="block text-sm font-medium text-slate-700">Categoría</label>
+          <label htmlFor="category" className="block text-sm font-medium text-slate-700">Subcategoría</label>
           <div className="flex gap-2">
             <select id="category" name="category" value={form.category} onChange={onChange} required className="min-h-11 flex-1 rounded-lg border px-3 py-2">
               <option value="">-- Seleccionar --</option>
@@ -143,7 +151,7 @@ export default function NewProductPage() {
               Administrar
             </a>
           </div>
-          <p className="text-xs text-slate-500">Si necesitás otra categoría, podés crearla desde el enlace.</p>
+          <p className="text-xs text-slate-500">Seleccioná una subcategoría válida. Las categorías principales se gestionan aparte.</p>
         </div>
 
         <div className="space-y-1">

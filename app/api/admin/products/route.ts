@@ -39,12 +39,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
+    const candidateTables = ["subcategories", "subcategorias", "categories"]
+    let validSubcategory = null as string | null
+
+    if (subcategory) {
+      for (const tableName of candidateTables) {
+        const { data, error } = await supabaseServer.from(tableName).select("id").eq("id", subcategory).limit(1)
+        if (!error && data && data.length > 0) {
+          validSubcategory = subcategory
+          break
+        }
+      }
+
+      if (!validSubcategory) {
+        return NextResponse.json({ error: "La subcategoría seleccionada no existe en la base de datos." }, { status: 400 })
+      }
+    }
+
     const product = {
       id: id || undefined,
       name,
       description: description || null,
       price: Number(price),
-      subcategory: subcategory || null,
+      subcategory: validSubcategory,
       image: image || null,
       in_stock: true,
     }

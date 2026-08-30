@@ -1,7 +1,14 @@
 import Link from "next/link"
-import { CATEGORY_GROUPS } from "@/lib/category-groups"
+import supabaseServer from "@/lib/supabaseServer"
 
 export async function CategoriesSection() {
+  const { data: categories } = await supabaseServer
+    .from("categoriaprincipal")
+    .select("id, name, description, image")
+    .order("name", { ascending: true })
+
+  const visibleCategories = (categories ?? []).slice(0, 6)
+
   return (
     <section id="categorias" className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -14,24 +21,35 @@ export async function CategoriesSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
-          {CATEGORY_GROUPS.map((group) => (
-            <div key={group.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                {group.name}
+        <div className="mt-12 flex flex-wrap justify-center gap-6">
+          {visibleCategories.map((category) => (
+            <Link
+              key={category.id}
+              href={`/productos?categoria=${category.id}`}
+              className="group block w-full max-w-[360px] overflow-hidden rounded-[28px] border border-[#e7d7ca] bg-white shadow-[0_12px_28px_rgba(53,33,23,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_32px_rgba(53,33,23,0.12)] sm:w-[calc(50%-0.75rem)] xl:w-[calc(33.333%-1rem)]"
+            >
+              <div className="relative h-64 overflow-hidden bg-[#f4e7dc]">
+                {category.image ? (
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#f3d3b3] via-[#d1895d] to-[#4b2d22] text-xl font-semibold text-white">
+                    {category.name}
+                  </div>
+                )}
+
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1f120d]/80 via-[#1f120d]/15 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <div className="text-xl font-semibold text-white">{category.name}</div>
+                  {category.description && (
+                    <div className="mt-1 line-clamp-2 text-xs text-white/80">{category.description}</div>
+                  )}
+                </div>
               </div>
-              <div className="space-y-2">
-                {group.items.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`/productos?categoria=${item.id}`}
-                    className="block rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -40,7 +58,7 @@ export async function CategoriesSection() {
             href="/productos"
             className="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
           >
-            Todos los productos
+            Todas las categorías
           </Link>
         </div>
       </div>

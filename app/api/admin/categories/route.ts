@@ -2,6 +2,41 @@ import { NextResponse } from "next/server"
 import supabaseServer from "@/lib/supabaseServer"
 import { normalizeUserMessage } from "@/lib/es-messages"
 
+async function fetchSubcategories() {
+  const candidates = [
+    {
+      table: "subcategories",
+      select: "id, name, description, image, categoria_principal_id",
+    },
+    {
+      table: "subcategorias",
+      select: "id, name, description, image, categoriaprincipal_id",
+    },
+    {
+      table: "categories",
+      select: "id, name, description, image",
+    },
+  ]
+
+  for (const candidate of candidates) {
+    const { data, error } = await supabaseServer.from(candidate.table).select(candidate.select).order("name", { ascending: true })
+    if (!error && data) {
+      return data
+    }
+  }
+
+  return []
+}
+
+export async function GET() {
+  try {
+    const data = await fetchSubcategories()
+    return NextResponse.json({ data })
+  } catch (err: any) {
+    return NextResponse.json({ error: normalizeUserMessage(err?.message, "Ocurrió un error al cargar las subcategorías.") }, { status: 500 })
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()

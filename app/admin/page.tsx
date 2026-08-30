@@ -38,17 +38,31 @@ export default function AdminIndexPage() {
           </Link>
         </div>
 
-        <Link
-          href="/admin/categorias"
-          className="group rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        >
-          <div className="text-sm font-medium uppercase tracking-wide text-emerald-700">Categorías</div>
-          <div className="mt-2 text-xl font-semibold text-slate-900">Gestionar categorías</div>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Crear, editar o eliminar categorías para mantener ordenado el catálogo.
-          </p>
-          <span className="mt-4 inline-flex text-sm font-medium text-emerald-700 group-hover:underline">Abrir gestión</span>
-        </Link>
+        <div className="space-y-4">
+          <Link
+            href="/admin/categorias"
+            className="group block rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <div className="text-sm font-medium uppercase tracking-wide text-emerald-700">Subcategorías</div>
+            <div className="mt-2 text-xl font-semibold text-slate-900">Gestionar subcategorías</div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Crear, editar o eliminar subcategorías para mantener ordenado el catálogo interno.
+            </p>
+            <span className="mt-4 inline-flex text-sm font-medium text-emerald-700 group-hover:underline">Abrir gestión</span>
+          </Link>
+
+          <Link
+            href="/admin/categorias-principales"
+            className="group block rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+            <div className="text-sm font-medium uppercase tracking-wide text-orange-700">Categorías principales</div>
+            <div className="mt-2 text-xl font-semibold text-slate-900">Gestionar categorías principales</div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Administrá las categorías principales que agrupan cada bloque del catálogo.
+            </p>
+            <span className="mt-4 inline-flex text-sm font-medium text-orange-700 group-hover:underline">Abrir gestión</span>
+          </Link>
+        </div>
       </div>
     </div>
   )
