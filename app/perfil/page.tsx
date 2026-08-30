@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import supabaseBrowser from "@/lib/supabaseClientBrowser"
+import { normalizeUserMessage } from "@/lib/es-messages"
 
 export default function PerfilPage() {
   const router = useRouter()
@@ -63,7 +64,7 @@ export default function PerfilPage() {
       setMessage("Datos actualizados correctamente.")
       setPassword("")
     } catch (err: any) {
-      setMessage(err.message || "No se pudieron actualizar los datos.")
+      setMessage(normalizeUserMessage(err?.message, "No se pudieron actualizar los datos."))
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { requireAdminSession } from "@/lib/admin-auth"
 import supabaseServer from "@/lib/supabaseServer"
+import { normalizeUserMessage } from "@/lib/es-messages"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -16,11 +17,11 @@ export async function DELETE(_: Request, { params }: Params) {
     const { error } = await supabaseServer.from("products").delete().eq("id", id)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: normalizeUserMessage(error.message, "No se pudo eliminar el producto.") }, { status: 500 })
     }
 
     return NextResponse.json({ ok: true })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || String(err) }, { status: 500 })
+    return NextResponse.json({ error: normalizeUserMessage(err?.message, "Ocurrió un error al eliminar el producto.") }, { status: 500 })
   }
 }

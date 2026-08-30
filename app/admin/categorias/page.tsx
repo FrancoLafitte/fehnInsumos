@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import { normalizeUserMessage } from "@/lib/es-messages"
 
 type Category = { id: string; name: string; description?: string; image?: string }
 
@@ -45,13 +46,13 @@ export default function CategoriesAdminPage() {
         body: JSON.stringify(body),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Error")
-      setMsg(editingId ? "Categoría actualizada" : "Categoría creada")
+      if (!res.ok) throw new Error(json?.error || "Error al guardar la categoría")
+      setMsg(editingId ? "Categoría actualizada correctamente." : "Categoría creada correctamente.")
       setForm({ id: "", name: "", description: "", image: "" })
       setEditingId(null)
       await fetchCategories()
     } catch (err: any) {
-      setMsg(err.message || String(err))
+      setMsg(normalizeUserMessage(err?.message, "No se pudo guardar la categoría."))
     } finally {
       setLoading(false)
     }
@@ -76,15 +77,15 @@ export default function CategoriesAdminPage() {
     try {
       const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" })
       const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Error")
+      if (!res.ok) throw new Error(json?.error || "Error al eliminar la categoría")
       if (editingId === id) {
         setEditingId(null)
         setForm({ id: "", name: "", description: "", image: "" })
       }
-      setMsg("Categoría eliminada")
+      setMsg("Categoría eliminada correctamente.")
       await fetchCategories()
     } catch (err: any) {
-      setMsg(err.message || String(err))
+      setMsg(normalizeUserMessage(err?.message, "No se pudo eliminar la categoría."))
     } finally {
       setLoading(false)
     }

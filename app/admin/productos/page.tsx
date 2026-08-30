@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { normalizeUserMessage } from "@/lib/es-messages"
 
 type Product = {
   id: string
@@ -24,7 +25,7 @@ export default function AdminProductsPage() {
       if (!res.ok) throw new Error(json?.error || "Error al cargar productos")
       setProducts(json.data || [])
     } catch (err: any) {
-      setMessage(err.message || String(err))
+      setMessage(normalizeUserMessage(err?.message, "No se pudieron cargar los productos."))
     }
   }
 
@@ -41,11 +42,11 @@ export default function AdminProductsPage() {
     try {
       const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" })
       const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "No se pudo eliminar")
-      setMessage("Producto eliminado")
+      if (!res.ok) throw new Error(json?.error || "No se pudo eliminar el producto")
+      setMessage("Producto eliminado correctamente.")
       await fetchProducts()
     } catch (err: any) {
-      setMessage(err.message || String(err))
+      setMessage(normalizeUserMessage(err?.message, "No se pudo eliminar el producto."))
     } finally {
       setLoading(false)
     }

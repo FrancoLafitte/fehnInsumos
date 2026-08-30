@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CartProvider } from '@/context/cart-context'
-import { Header } from '@/components/header'
-import { Footer } from '@/components/footer'
+import { AppShell } from '@/components/app-shell'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -42,11 +41,7 @@ export default function RootLayout({
     <html lang="es" className="bg-background">
       <body className="font-sans antialiased">
         <CartProvider>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          <AppShell>{children}</AppShell>
         </CartProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

@@ -121,7 +121,7 @@ export function Header() {
                 <button
                   type="button"
                   title={userEmail}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white shadow-sm"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white shadow-sm transition-all duration-200 ease-out hover:scale-105 hover:bg-slate-700 hover:shadow-md hover:ring-2 hover:ring-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300"
                   aria-label={userEmail}
                   onClick={() => setMenuOpen((prev) => !prev)}
                 >

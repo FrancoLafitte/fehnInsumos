@@ -24,13 +24,15 @@ export async function requireAdminSession() {
   )
 
   const {
-    data: { user },
+    data: { session },
     error,
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getSession()
 
-  if (error || !user) {
+  if (error || !session?.user) {
     return null
   }
+
+  const user = session.user
 
   if (!isAdminEmail(user.email)) {
     return null

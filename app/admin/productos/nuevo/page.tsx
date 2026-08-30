@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { normalizeUserMessage } from "@/lib/es-messages"
 
 export default function NewProductPage() {
   const [form, setForm] = useState({
@@ -15,7 +16,7 @@ export default function NewProductPage() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const { name, value } = e.target
     setForm((s) => ({ ...s, [name]: value }))
   }
@@ -44,10 +45,10 @@ export default function NewProductPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data?.error || "Error al crear producto")
 
-      setMessage("Producto creado correctamente")
+      setMessage("Producto creado correctamente.")
       setForm({ id: "", name: "", description: "", price: "", category: "", images: "" })
     } catch (err: any) {
-      setMessage(err.message || String(err))
+      setMessage(normalizeUserMessage(err?.message, "No se pudo crear el producto."))
     } finally {
       setLoading(false)
     }

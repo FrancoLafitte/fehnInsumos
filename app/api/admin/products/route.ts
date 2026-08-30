@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { requireAdminSession } from "@/lib/admin-auth"
 import supabaseServer from "@/lib/supabaseServer"
+import { normalizeUserMessage } from "@/lib/es-messages"
 
 export async function GET() {
   try {
@@ -15,12 +16,12 @@ export async function GET() {
       .order("created_at", { ascending: false })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: normalizeUserMessage(error.message, "No se pudieron cargar los productos.") }, { status: 500 })
     }
 
     return NextResponse.json({ data })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || String(err) }, { status: 500 })
+    return NextResponse.json({ error: normalizeUserMessage(err?.message, "Ocurrió un error al cargar los productos.") }, { status: 500 })
   }
 }
 
@@ -51,11 +52,11 @@ export async function POST(req: Request) {
     const { data, error } = await supabaseServer.from("products").insert([product])
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: normalizeUserMessage(error.message, "No se pudo crear el producto.") }, { status: 500 })
     }
 
     return NextResponse.json({ data })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || String(err) }, { status: 500 })
+    return NextResponse.json({ error: normalizeUserMessage(err?.message, "Ocurrió un error al crear el producto.") }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import supabaseServer from "@/lib/supabaseServer"
+import { normalizeUserMessage } from "@/lib/es-messages"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -19,10 +20,10 @@ export async function PATCH(req: Request, { params }: Params) {
       .eq("id", id)
       .select()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) return NextResponse.json({ error: normalizeUserMessage(error.message, "No se pudo actualizar la categoría.") }, { status: 500 })
     return NextResponse.json({ data })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || String(err) }, { status: 500 })
+    return NextResponse.json({ error: normalizeUserMessage(err?.message, "Ocurrió un error al actualizar la categoría.") }, { status: 500 })
   }
 }
 
@@ -31,10 +32,10 @@ export async function DELETE(_: Request, { params }: Params) {
     const { id } = await params
 
     const { error } = await supabaseServer.from("categories").delete().eq("id", id)
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) return NextResponse.json({ error: normalizeUserMessage(error.message, "No se pudo eliminar la categoría.") }, { status: 500 })
 
     return NextResponse.json({ ok: true })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || String(err) }, { status: 500 })
+    return NextResponse.json({ error: normalizeUserMessage(err?.message, "Ocurrió un error al eliminar la categoría.") }, { status: 500 })
   }
 }
