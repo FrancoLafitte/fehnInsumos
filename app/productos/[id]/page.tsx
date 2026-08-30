@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
-import { getCategoryById } from "@/lib/products"
 import { getPublicProductById } from "@/lib/products-server"
 import { ProductDetail } from "@/components/products/product-detail"
+import supabaseServer from "@/lib/supabaseServer"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -34,7 +34,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  const category = getCategoryById(product.category)
+  const { data: category } = await supabaseServer
+    .from("subcategories")
+    .select("name")
+    .eq("id", product.category)
+    .maybeSingle()
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

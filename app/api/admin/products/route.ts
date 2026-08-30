@@ -12,7 +12,7 @@ export async function GET() {
 
     const { data, error } = await supabaseServer
       .from("products")
-      .select("id, name, description, price, category, image, in_stock")
+      .select("id, name, description, price, subcategory, image, in_stock")
       .order("created_at", { ascending: false })
 
     if (error) {
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { id, name, description, price, category, image } = body
+    const { id, name, description, price, subcategory, image } = body
 
     if (!name || price == null) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       name,
       description: description || null,
       price: Number(price),
-      category: category || null,
+      subcategory: subcategory || null,
       image: image || null,
       in_stock: true,
     }

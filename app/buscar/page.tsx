@@ -2,7 +2,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { ProductCard } from "@/components/product-card"
-import { categories } from "@/lib/products"
+import supabaseServer from "@/lib/supabaseServer"
 import { getPublicProducts } from "@/lib/products-server"
 
 export const dynamic = "force-dynamic"
@@ -20,6 +20,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
   const query = params.q?.trim() || ""
   const products = query ? await getPublicProducts() : []
+
+  let categories: Array<{ id: string; name: string }> = []
+
+  for (const tableName of ["subcategorias", "subcategories", "categories"]) {
+    const { data, error } = await supabaseServer.from(tableName).select("id, name").order("name", { ascending: true })
+    if (!error && Array.isArray(data) && data.length > 0) {
+      categories = data
+      break
+    }
+  }
 
   const searchResults = query
     ? products.filter(

@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { ProductsGrid } from "@/components/products/products-grid"
 import { ProductsFilter } from "@/components/products/products-filter"
-import { categories } from "@/lib/products"
+import supabaseServer from "@/lib/supabaseServer"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -18,34 +18,48 @@ interface ProductsPageProps {
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams
   const categoryId = params.categoria
-  const currentCategory = categoryId
-    ? categories.find((c) => c.id === categoryId)
+
+  const { data: mainCategoriesData } = await supabaseServer
+    .from("categoriaprincipal")
+    .select("id, name, description")
+    .order("name", { ascending: true })
+
+  const { data: subcategoriesData } = await supabaseServer
+    .from("subcategories")
+    .select("id, name, description, categoria_principal_id")
+    .order("name", { ascending: true })
+
+  const mainCategories = mainCategoriesData ?? []
+  const subcategories = subcategoriesData ?? []
+
+  const mainCategory = categoryId
+    ? mainCategories.find((item) => item.id === categoryId) ?? null
     : null
+
+  const childCategory = categoryId
+    ? subcategories.find((item) => item.id === categoryId) ?? null
+    : null
+
+  const currentCategory = mainCategory ?? childCategory
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {currentCategory ? currentCategory.name : "Todos los Productos"}
         </h1>
         {currentCategory && (
-          <p className="mt-2 text-muted-foreground">
-            {currentCategory.description}
-          </p>
+          <p className="mt-2 text-muted-foreground">{currentCategory.description}</p>
         )}
       </div>
 
-      {/* Filters and Grid */}
       <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Sidebar Filters */}
-        <aside className="w-full shrink-0 lg:w-64">
+        <aside className="w-full shrink-0 lg:w-72">
           <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>
             <ProductsFilter currentCategory={categoryId} />
           </Suspense>
         </aside>
 
-        {/* Products Grid */}
         <div className="flex-1">
           <Suspense fallback={<ProductsGridSkeleton />}>
             <ProductsGrid categoryId={categoryId} />

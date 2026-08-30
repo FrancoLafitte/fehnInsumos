@@ -1,8 +1,7 @@
-import Image from "next/image"
 import Link from "next/link"
-import { categories } from "@/lib/products"
+import { CATEGORY_GROUPS } from "@/lib/category-groups"
 
-export function CategoriesSection() {
+export async function CategoriesSection() {
   return (
     <section id="categorias" className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -15,34 +14,34 @@ export function CategoriesSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/productos?categoria=${category.id}`}
-              className="group relative overflow-hidden rounded-lg"
-            >
-              <div className="relative aspect-[4/3] w-full">
-                {category.image ? (
-                  <Image
-                    src={category.image}
-                    alt={category.name}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                ) : null}
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-transparent" />
+        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+          {CATEGORY_GROUPS.map((group) => (
+            <div key={group.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                {group.name}
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="text-xl font-semibold text-white">
-                  {category.name}
-                </h3>
-                <p className="mt-2 text-sm text-white/80">
-                  {category.description}
-                </p>
+              <div className="space-y-2">
+                {group.items.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/productos?categoria=${item.id}`}
+                    className="block rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm font-medium text-foreground/80 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
               </div>
-            </Link>
+            </div>
           ))}
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/productos"
+            className="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+          >
+            Todos los productos
+          </Link>
         </div>
       </div>
     </section>

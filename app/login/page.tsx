@@ -124,7 +124,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 w-full rounded-xl bg-[#8a4d2a] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#734226] disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-2 w-full rounded-xl bg-[#a76a45] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#8f5639] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? (isSignup ? "Creando cuenta..." : "Ingresando...") : isSignup ? "Registrarme" : "Entrar"}
               </button>

@@ -17,7 +17,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart()
 
   return (
-    <Card className="group overflow-hidden">
+    <Card className="group overflow-hidden gap-0 py-0">
       <Link href={`/productos/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           {product.image ? (

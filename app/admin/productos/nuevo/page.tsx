@@ -14,11 +14,40 @@ export default function NewProductPage() {
   })
   const [categories, setCategories] = useState<Array<{id:string;name:string}>>([])
   const [loading, setLoading] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
   function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const { name, value } = e.target
     setForm((s) => ({ ...s, [name]: value }))
+  }
+
+  async function handleImageUpload(file: File | null) {
+    if (!file) return
+
+    setUploadingImage(true)
+    setMessage(null)
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || "No se pudo subir la imagen")
+
+      const nextImages = form.images ? `${form.images}, ${json.url}` : json.url
+      setForm((s) => ({ ...s, images: nextImages }))
+      setMessage("Imagen subida correctamente.")
+    } catch (err: any) {
+      setMessage(normalizeUserMessage(err?.message, "No se pudo subir la imagen."))
+    } finally {
+      setUploadingImage(false)
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -32,7 +61,7 @@ export default function NewProductPage() {
         name: form.name,
         description: form.description,
         price: Number(form.price || 0),
-        category: form.category,
+        subcategory: form.category,
         image: form.images.split(",")[0]?.trim() || null,
       }
 
@@ -119,12 +148,35 @@ export default function NewProductPage() {
 
         <div className="space-y-1">
           <label htmlFor="images" className="block text-sm font-medium text-slate-700">Imágenes</label>
-          <input id="images" name="images" value={form.images} onChange={onChange} placeholder="URL1, URL2, URL3" className="block w-full rounded-lg border px-3 py-2" />
+          <input
+            id="images"
+            name="images"
+            value={form.images}
+            onChange={onChange}
+            placeholder="URL1, URL2, URL3 o subí una imagen desde tu PC"
+            className="block w-full rounded-lg border px-3 py-2"
+          />
+          <div className="mt-2 flex items-center gap-3">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleImageUpload(e.target.files?.[0] ?? null)}
+              className="block w-full max-w-xs text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-sky-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-sky-700"
+            />
+            {uploadingImage && <span className="text-sm text-slate-500">Subiendo...</span>}
+          </div>
           <p className="text-xs text-slate-500">Separá múltiples imágenes con coma. Se guarda la primera como imagen principal.</p>
+          {form.images && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {form.images.split(",").map((img, index) => img.trim()).filter(Boolean).slice(0, 4).map((img, index) => (
+                <img key={`${img}-${index}`} src={img} alt={`Preview ${index + 1}`} className="h-16 w-16 rounded object-cover border" />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
-          <button disabled={loading} className="rounded-lg bg-sky-600 px-4 py-2 font-medium text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60">
+          <button disabled={loading || uploadingImage} className="rounded-lg bg-sky-600 px-4 py-2 font-medium text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60">
             {loading ? "Guardando..." : "Crear producto"}
           </button>
           {message && <div className="text-sm text-slate-700" aria-live="polite">{message}</div>}

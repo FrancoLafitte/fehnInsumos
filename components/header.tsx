@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { ShoppingCart, Menu, X, UserRound } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
@@ -14,7 +15,7 @@ type Category = {
   name: string
 }
 
-const FEATURED_CATEGORY_IDS = ["arcillas", "esmaltes", "herramientas", "bizcochos"]
+const FEATURED_CATEGORY_IDS = ["arcillas", "esmaltes", "de-modelado", "bases-y-fundentes", "bizcochos"]
 
 export function Header() {
   const { getItemCount } = useCart()
@@ -86,18 +87,29 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-[#7a4c31]/20 bg-[#d79d69]/95 backdrop-blur supports-[backdrop-filter]:bg-[#d79d69]/82">
       {/* Top bar with logo, search, and cart */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
-          <Link href="/" className="flex shrink-0 items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              FEHN
-            </span>
-            <span className="hidden text-sm text-muted-foreground sm:inline">
-              Insumos para Cerámica
-            </span>
+          <Link href="/" className="flex shrink-0 items-center gap-3">
+            <div className="relative h-12 w-12 overflow-hidden rounded-md bg-transparent sm:h-14 sm:w-14">
+              <Image
+                src="/images/fhenLogo.png"
+                alt="Logo FEHN"
+                fill
+                priority
+                className="object-contain"
+              />
+            </div>
+            <div className="flex flex-col justify-center leading-none">
+              <span className="text-xl font-black tracking-[0.18em] text-[#2b1b14] sm:text-2xl">
+                FEHN
+              </span>
+              <span className="mt-1 hidden text-[10px] font-medium uppercase tracking-[0.18em] text-[#6a4838] sm:block">
+                Insumos para Cerámica
+              </span>
+            </div>
           </Link>
 
           {/* Search bar - hidden on mobile */}
@@ -173,7 +185,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden text-[#3d2418] hover:bg-[#f2d7bc]"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -193,15 +205,16 @@ export function Header() {
       </div>
 
       {/* Navigation bar */}
-      <nav className="hidden border-t border-border lg:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
+      <nav className="hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 lg:block">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-3">
             <div className="group relative after:absolute after:left-0 after:top-full after:h-4 after:w-full after:content-['']">
               <Link
                 href="/productos"
-                className="inline-flex h-10 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
-                Todos los Productos
+                <span>Todas las Categorías</span>
+                <span className="text-[10px]">▼</span>
               </Link>
 
               {categories.length > 0 && (
@@ -219,7 +232,7 @@ export function Header() {
                       href="/productos"
                       className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
                     >
-                      Ver catálogo completo
+                      Todos los productos
                     </Link>
                   </div>
 
@@ -241,8 +254,8 @@ export function Header() {
               )}
             </div>
 
-            <div className="hidden flex-wrap items-center gap-2 lg:flex">
-              {featuredCategories.map((category) => (
+            <div className="hidden flex-wrap items-center justify-center gap-2 lg:flex">
+              {categories.map((category) => (
                 <Link
                   key={category.id}
                   href={`/productos?categoria=${category.id}`}
@@ -252,15 +265,6 @@ export function Header() {
                 </Link>
               ))}
             </div>
-          </div>
-
-          <div className="hidden items-center gap-2 text-xs font-medium text-muted-foreground lg:flex">
-            <span className="rounded-full border border-border px-3 py-1.5">
-              Cerámica artesanal
-            </span>
-            <span className="rounded-full border border-border px-3 py-1.5">
-              Envíos a todo el país
-            </span>
           </div>
         </div>
       </nav>

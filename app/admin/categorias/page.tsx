@@ -10,6 +10,7 @@ export default function CategoriesAdminPage() {
   const [form, setForm] = useState({ id: "", name: "", description: "", image: "" })
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
 
   async function fetchCategories() {
@@ -29,6 +30,33 @@ export default function CategoriesAdminPage() {
   function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target
     setForm((s) => ({ ...s, [name]: value }))
+  }
+
+  async function handleImageUpload(file: File | null) {
+    if (!file) return
+
+    setUploadingImage(true)
+    setMsg(null)
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || "No se pudo subir la imagen")
+
+      setForm((s) => ({ ...s, image: json.url }))
+      setMsg("Imagen subida correctamente.")
+    } catch (err: any) {
+      setMsg(normalizeUserMessage(err?.message, "No se pudo subir la imagen."))
+    } finally {
+      setUploadingImage(false)
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -115,11 +143,34 @@ export default function CategoriesAdminPage() {
           <input id="description" name="description" value={form.description} onChange={onChange} className="mt-1 block w-full rounded-lg border px-3 py-2" />
         </div>
         <div>
-          <label htmlFor="image" className="block text-sm font-medium text-slate-700">Imagen (URL)</label>
-          <input id="image" name="image" value={form.image} onChange={onChange} className="mt-1 block w-full rounded-lg border px-3 py-2" />
+          <label htmlFor="image" className="block text-sm font-medium text-slate-700">Imagen</label>
+          <div className="mt-1 space-y-3">
+            <input
+              id="image"
+              name="image"
+              value={form.image}
+              onChange={onChange}
+              placeholder="Pegá una URL o dejá este campo vacío si subís archivo"
+              className="block w-full rounded-lg border px-3 py-2"
+            />
+            <div className="flex items-center gap-3">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e.target.files?.[0] ?? null)}
+                className="block w-full max-w-xs text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-emerald-700"
+              />
+              {uploadingImage && <span className="text-sm text-slate-500">Subiendo...</span>}
+            </div>
+          </div>
+          {form.image && (
+            <div className="mt-3">
+              <img src={form.image} alt="Preview de la categoría" className="h-24 w-24 rounded object-cover border" />
+            </div>
+          )}
         </div>
         <div>
-          <button disabled={loading} className="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60">
+          <button disabled={loading || uploadingImage} className="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60">
             {loading ? "Guardando..." : editingId ? "Guardar cambios" : "Crear categoría"}
           </button>
           {editingId && (

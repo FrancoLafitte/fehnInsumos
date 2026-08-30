@@ -3,10 +3,10 @@ import Link from "next/link"
 export default function AdminIndexPage() {
   return (
     <div className="mx-auto max-w-4xl p-6">
-      <div className="mb-6 rounded-2xl border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 text-white shadow-sm">
-        <p className="text-sm uppercase tracking-[0.2em] text-slate-300">Panel de administración</p>
-        <h1 className="mt-2 text-3xl font-semibold">Elegí qué querés administrar</h1>
-        <p className="mt-3 max-w-2xl text-sm text-slate-300">
+      <div className="mb-6 rounded-2xl border border-[#7f4e36]/20 bg-gradient-to-br from-[#e7b891] via-[#b9784d] to-[#5a352b] p-6 text-[#fffaf5] shadow-sm">
+        <p className="text-sm uppercase tracking-[0.2em] text-[#f9e9dc]">Panel de administración</p>
+        <h1 className="mt-2 text-3xl font-semibold text-white">Elegí qué querés administrar</h1>
+        <p className="mt-3 max-w-2xl text-sm text-[#f7e7db]">
           Desde acá podés cargar productos, organizar categorías y mantener el catálogo ordenado sin salir del panel.
         </p>
       </div>
