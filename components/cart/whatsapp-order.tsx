@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/context/cart-context"
 import { formatPrice } from "@/lib/products"
 
-const WHATSAPP_NUMBER = "5492923523294"
+const WHATSAPP_NUMBER = "5492213141986"
 
 export function WhatsAppOrder() {
   const { items, getTotal, clearCart } = useCart()
