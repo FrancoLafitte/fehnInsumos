@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   keywords: ['cerámica', 'arcilla', 'esmaltes', 'herramientas cerámica', 'categorías cerámica', 'catálogo cerámica'],
   generator: 'v0.app',
   other: {
-    'google-site-verification': 'google96beb3a4f98e07b5.html',
+    'google-site-verification': 'XZ0iCMhE8M8wUr6OVt4jWVSbMn9LUm2hlXcWtluCWYI',
   },
   icons: {
     icon: '/images/favicon.ico',
