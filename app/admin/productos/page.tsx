@@ -24,6 +24,7 @@ export default function AdminProductsPage() {
   const [subcategories, setSubcategories] = useState<SubcategoryOption[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [form, setForm] = useState({
     id: "",
     name: "",
@@ -33,6 +34,33 @@ export default function AdminProductsPage() {
     image: "",
   })
   const [message, setMessage] = useState<string | null>(null)
+
+  async function handleImageUpload(file: File | null) {
+    if (!file) return
+
+    setUploadingImage(true)
+    setMessage(null)
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || "No se pudo subir la imagen")
+
+      setForm((s) => ({ ...s, image: json.url }))
+      setMessage("Imagen subida correctamente.")
+    } catch (err: any) {
+      setMessage(normalizeUserMessage(err?.message, "No se pudo subir la imagen."))
+    } finally {
+      setUploadingImage(false)
+    }
+  }
 
   async function fetchProducts() {
     try {
@@ -177,11 +205,32 @@ export default function AdminProductsPage() {
 
           <div>
             <label htmlFor="image" className="block text-sm font-medium text-slate-700">Imagen</label>
-            <input id="image" name="image" value={form.image} onChange={onChange} className="mt-1 block w-full rounded-lg border px-3 py-2" />
+            <input
+              id="image"
+              name="image"
+              value={form.image}
+              onChange={onChange}
+              placeholder="URL de la imagen o subí una desde tu PC"
+              className="mt-1 block w-full rounded-lg border px-3 py-2"
+            />
+            <div className="mt-2 flex items-center gap-3">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e.target.files?.[0] ?? null)}
+                className="block w-full max-w-xs text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-red-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-red-700"
+              />
+              {uploadingImage && <span className="text-sm text-slate-500">Subiendo...</span>}
+            </div>
+            {form.image && (
+              <div className="mt-3">
+                <img src={form.image} alt="Previsualización" className="h-20 w-20 rounded object-cover border" />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
-            <button type="submit" disabled={loading} className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60">
+            <button type="submit" disabled={loading || uploadingImage} className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60">
               {loading ? "Guardando..." : "Guardar cambios"}
             </button>
             <button
