@@ -1,12 +1,18 @@
 import { randomUUID } from "crypto"
-import { promises as fs } from "fs"
-import path from "path"
 import { NextResponse } from "next/server"
+
+import { requireAdminSession } from "@/lib/admin-auth"
+import supabaseServer from "@/lib/supabaseServer"
 
 export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   try {
+    const user = await requireAdminSession()
+    if (!user) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    }
+
     const formData = await req.formData()
     const file = formData.get("file")
 
@@ -18,19 +24,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "El archivo debe ser una imagen." }, { status: 400 })
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads")
-    await fs.mkdir(uploadDir, { recursive: true })
-
+    const bucket = process.env.SUPABASE_UPLOAD_BUCKET || "product-images"
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_")
-    const uniqueFileName = `${Date.now()}-${randomUUID()}-${safeName}`
-    const filePath = path.join(uploadDir, uniqueFileName)
+    const storagePath = `${Date.now()}-${randomUUID()}-${safeName}`
 
-    const bytes = Buffer.from(await file.arrayBuffer())
-    await fs.writeFile(filePath, bytes)
+    const { error: uploadError } = await supabaseServer.storage
+      .from(bucket)
+      .upload(storagePath, file, {
+        contentType: file.type,
+        cacheControl: "3600",
+        upsert: false,
+      })
+
+    if (uploadError) {
+      throw new Error(uploadError.message)
+    }
+
+    const { data: publicUrlData } = supabaseServer.storage.from(bucket).getPublicUrl(storagePath)
 
     return NextResponse.json({
       ok: true,
-      url: `/uploads/${uniqueFileName}`,
+      url: publicUrlData?.publicUrl || `/uploads/${storagePath}`,
     })
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || "No se pudo subir la imagen." }, { status: 500 })
