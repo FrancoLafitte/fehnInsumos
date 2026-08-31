@@ -20,6 +20,33 @@ export async function PATCH(req: Request, { params }: Params) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
+    const { data: currentProduct, error: currentProductError } = await supabaseServer
+      .from("products")
+      .select("image")
+      .eq("id", id)
+      .maybeSingle()
+
+    if (currentProductError) {
+      return NextResponse.json({ error: normalizeUserMessage(currentProductError.message, "No se pudo identificar la imagen actual del producto.") }, { status: 500 })
+    }
+
+    const previousImageUrl = currentProduct?.image
+    const nextImageUrl = image || null
+
+    if (previousImageUrl && nextImageUrl && previousImageUrl !== nextImageUrl) {
+      const bucket = process.env.SUPABASE_UPLOAD_BUCKET || "product-images"
+      const previousMatch = previousImageUrl.match(/\/storage\/v1\/object\/public\/.+?\/(.+)$/)
+
+      if (previousMatch?.[1]) {
+        const previousPath = decodeURIComponent(previousMatch[1])
+        const { error: removePreviousError } = await supabaseServer.storage.from(bucket).remove([previousPath])
+
+        if (removePreviousError) {
+          console.error("No se pudo eliminar la imagen previa del storage:", removePreviousError)
+        }
+      }
+    }
+
     const candidateTables = ["subcategories", "subcategorias", "categories"]
     let validSubcategory = null as string | null
 
@@ -66,6 +93,31 @@ export async function DELETE(_: Request, { params }: Params) {
     }
 
     const { id } = await params
+
+    const { data: productData, error: productFetchError } = await supabaseServer
+      .from("products")
+      .select("image")
+      .eq("id", id)
+      .maybeSingle()
+
+    if (productFetchError) {
+      return NextResponse.json({ error: normalizeUserMessage(productFetchError.message, "No se pudo obtener el producto a eliminar.") }, { status: 500 })
+    }
+
+    const imageUrl = productData?.image
+    if (imageUrl) {
+      const bucket = process.env.SUPABASE_UPLOAD_BUCKET || "product-images"
+      const storageMatch = imageUrl.match(/\/storage\/v1\/object\/public\/.+?\/(.+)$/)
+
+      if (storageMatch?.[1]) {
+        const objectPath = decodeURIComponent(storageMatch[1])
+        const { error: deleteStorageError } = await supabaseServer.storage.from(bucket).remove([objectPath])
+
+        if (deleteStorageError) {
+          console.error("No se pudo eliminar la imagen del storage:", deleteStorageError)
+        }
+      }
+    }
 
     const { error } = await supabaseServer.from("products").delete().eq("id", id)
 
