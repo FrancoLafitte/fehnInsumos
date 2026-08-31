@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-const WHATSAPP_NUMBER = "2923523294"
+const WHATSAPP_NUMBER = "5492923523294"
 const GOOGLE_MAPS_EMBED_URL = "https://www.google.com/maps?q=Fehn%20Insumos%20para%20Cer%C3%A1mica&output=embed"
 
 export function Footer() {
