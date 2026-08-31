@@ -15,9 +15,10 @@ interface ProductDetailProps {
 }
 
 export function ProductDetail({ product, categoryName }: ProductDetailProps) {
-  const { addItem } = useCart()
+  const { addItem, items } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
+  const quantityInCart = items.find((item) => item.product.id === product.id)?.quantity ?? 0
 
   const handleAddToCart = () => {
     addItem(product, quantity)
@@ -135,11 +136,17 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
               ) : (
                 <>
                   <ShoppingCart className="h-5 w-5" />
-                  Agregar al carrito
+                  {quantityInCart > 0 ? `Agregar más (${quantityInCart} en carrito)` : "Agregar al carrito"}
                 </>
               )}
             </Button>
           </div>
+
+          {quantityInCart > 0 && (
+            <p className="mt-3 text-sm font-medium text-primary">
+              Ya tenés {quantityInCart} unidad{quantityInCart > 1 ? "es" : ""} en el carrito.
+            </p>
+          )}
 
           {/* Subtotal */}
           {product.inStock && quantity > 1 && (

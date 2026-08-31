@@ -14,7 +14,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart()
+  const { addItem, items } = useCart()
+  const quantityInCart = items.find((item) => item.product.id === product.id)?.quantity ?? 0
 
   return (
     <Card className="group overflow-hidden gap-0 py-0">
@@ -28,6 +29,13 @@ export function ProductCard({ product }: ProductCardProps) {
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : null}
+
+          {quantityInCart > 0 && (
+            <div className="absolute right-2 top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-2 text-xs font-bold text-primary-foreground shadow-lg">
+              {quantityInCart}
+            </div>
+          )}
+
           {!product.inStock && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/80">
               <span className="text-sm font-medium text-muted-foreground">
@@ -46,6 +54,13 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="mt-1 text-lg font-semibold text-foreground">
           {formatPrice(product.price)}
         </p>
+
+        {quantityInCart > 0 && (
+          <p className="mt-2 text-xs font-medium text-primary">
+            En carrito: {quantityInCart}
+          </p>
+        )}
+
         <Button
           onClick={() => addItem(product)}
           disabled={!product.inStock}
@@ -53,7 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
           className="mt-3 w-full gap-2"
         >
           <Plus className="h-4 w-4" />
-          Agregar
+          {quantityInCart > 0 ? `Agregar otra` : "Agregar"}
         </Button>
       </CardContent>
     </Card>
