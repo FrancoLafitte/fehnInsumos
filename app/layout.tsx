@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   description: 'Tu tienda de insumos para cerámica con catálogo completo por categorías. Enviamos a todo el país.',
   keywords: ['cerámica', 'arcilla', 'esmaltes', 'herramientas cerámica', 'categorías cerámica', 'catálogo cerámica'],
   generator: 'v0.app',
+  other: {
+    'google-site-verification': 'google96beb3a4f98e07b5.html',
+  },
   icons: {
     icon: '/images/favicon.ico',
     shortcut: '/images/fhenLogo.png',
