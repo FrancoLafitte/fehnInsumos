@@ -59,6 +59,12 @@ export default function NewProductPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
+
+    if (uploadingImage) {
+      setMessage("Espera a que termine la subida de la imagen antes de crear el producto.")
+      return
+    }
+
     setLoading(true)
     setMessage(null)
 
@@ -168,8 +174,9 @@ export default function NewProductPage() {
             <input
               type="file"
               accept="image/*"
+              disabled={uploadingImage}
               onChange={(e) => handleImageUpload(e.target.files?.[0] ?? null)}
-              className="block w-full max-w-xs text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-sky-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-sky-700"
+              className="block w-full max-w-xs text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-sky-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
             />
             {uploadingImage && <span className="text-sm text-slate-500">Subiendo...</span>}
           </div>
@@ -185,7 +192,7 @@ export default function NewProductPage() {
 
         <div className="flex items-center gap-3">
           <button disabled={loading || uploadingImage} className="rounded-lg bg-sky-600 px-4 py-2 font-medium text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60">
-            {loading ? "Guardando..." : "Crear producto"}
+            {uploadingImage ? "Subiendo imagen..." : loading ? "Guardando..." : "Crear producto"}
           </button>
           {message && <div className="text-sm text-slate-700" aria-live="polite">{message}</div>}
         </div>

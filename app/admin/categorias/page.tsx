@@ -84,6 +84,12 @@ export default function CategoriesAdminPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
+
+    if (uploadingImage) {
+      setMsg("Espera a que termine la subida de la imagen antes de guardar.")
+      return
+    }
+
     setLoading(true)
     setMsg(null)
     try {
@@ -199,8 +205,9 @@ export default function CategoriesAdminPage() {
               <input
                 type="file"
                 accept="image/*"
+                disabled={uploadingImage}
                 onChange={(e) => handleImageUpload(e.target.files?.[0] ?? null)}
-                className="block w-full max-w-xs text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-emerald-700"
+                className="block w-full max-w-xs text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
               />
               {uploadingImage && <span className="text-sm text-slate-500">Subiendo...</span>}
             </div>
@@ -213,7 +220,7 @@ export default function CategoriesAdminPage() {
         </div>
         <div>
           <button disabled={loading || uploadingImage} className="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60">
-            {loading ? "Guardando..." : editingId ? "Guardar cambios" : "Crear categoría"}
+            {uploadingImage ? "Subiendo imagen..." : loading ? "Guardando..." : editingId ? "Guardar cambios" : "Crear categoría"}
           </button>
           {editingId && (
             <button
