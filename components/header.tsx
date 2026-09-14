@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ShoppingCart, Menu, X, UserRound } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useCart } from "@/context/cart-context"
 import { Button } from "@/components/ui/button"
@@ -19,6 +20,7 @@ const FEATURED_CATEGORY_IDS = ["arcillas", "esmaltes", "de-modelado", "bases-y-f
 
 export function Header() {
   const { getItemCount } = useCart()
+  const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
@@ -205,6 +207,7 @@ export function Header() {
       </div>
 
       {/* Navigation bar */}
+      {pathname !== "/productos" && (
       <nav className="hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-3">
@@ -222,6 +225,7 @@ export function Header() {
           </div>
         </div>
       </nav>
+      )}
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
@@ -244,7 +248,7 @@ export function Header() {
             >
               Todos los Productos
             </Link>
-            {categories.map((category) => (
+            {pathname !== "/productos" && categories.map((category) => (
               <Link
                 key={category.id}
                 href={`/productos?categoria=${category.id}`}
