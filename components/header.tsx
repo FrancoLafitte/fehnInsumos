@@ -23,13 +23,17 @@ export function Header() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showCategoriesNav, setShowCategoriesNav] = useState(true)
   const [categories, setCategories] = useState<Category[]>([])
   const [session, setSession] = useState<any>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const showCategoriesNavRef = useRef(true)
+  const scrollTransitionRef = useRef(0)
   const itemCount = getItemCount()
 
   useEffect(() => {
     let isMounted = true
+    let previousScrollY = window.scrollY
 
     async function fetchCategories() {
       try {
@@ -62,10 +66,44 @@ export function Header() {
 
     document.addEventListener("mousedown", handleClickOutside)
 
+    function handleScroll() {
+      const currentScrollY = window.scrollY
+      const scrollDelta = currentScrollY - previousScrollY
+
+      if (performance.now() < scrollTransitionRef.current) {
+        previousScrollY = currentScrollY
+        return
+      }
+
+      if (Math.abs(scrollDelta) < 8) {
+        previousScrollY = currentScrollY
+        return
+      }
+
+      if (currentScrollY <= 8 || currentScrollY < previousScrollY) {
+        if (!showCategoriesNavRef.current) {
+          showCategoriesNavRef.current = true
+          setShowCategoriesNav(true)
+          scrollTransitionRef.current = performance.now() + 350
+        }
+      } else if (currentScrollY > previousScrollY) {
+        if (showCategoriesNavRef.current) {
+          showCategoriesNavRef.current = false
+          setShowCategoriesNav(false)
+          scrollTransitionRef.current = performance.now() + 350
+        }
+      }
+
+      previousScrollY = currentScrollY
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
     return () => {
       isMounted = false
       authListener.subscription.unsubscribe()
       document.removeEventListener("mousedown", handleClickOutside)
+      window.removeEventListener("scroll", handleScroll)
     }
   }, [])
 
@@ -208,7 +246,7 @@ export function Header() {
 
       {/* Navigation bar */}
       {pathname !== "/productos" && (
-      <nav className="hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 lg:block">
+      <nav className={`hidden overflow-hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 transition-all duration-300 lg:block ${showCategoriesNav ? "max-h-20 translate-y-0 opacity-100" : "max-h-0 -translate-y-full border-transparent opacity-0"}`}>
         <div className="mx-auto w-full max-w-[1600px] px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex w-full items-center justify-center gap-2 lg:flex-nowrap">
             {categories.map((category) => (
