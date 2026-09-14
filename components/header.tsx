@@ -246,14 +246,14 @@ export function Header() {
 
       {/* Navigation bar */}
       {pathname !== "/productos" && (
-      <nav className={`hidden overflow-hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 transition-all duration-300 lg:block ${showCategoriesNav ? "max-h-20 translate-y-0 opacity-100" : "max-h-0 -translate-y-full border-transparent opacity-0"}`}>
-        <div className="mx-auto w-full max-w-[1600px] px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex w-full items-center justify-center gap-2 lg:flex-nowrap">
+      <nav className={`hidden overflow-hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 transition-all duration-300 lg:block ${showCategoriesNav ? "max-h-16 translate-y-0 opacity-100" : "max-h-0 -translate-y-full border-transparent opacity-0"}`}>
+        <div className="mx-auto w-full max-w-7xl px-4 py-1 sm:px-6 lg:px-8">
+          <div className="flex w-full items-center justify-center gap-1 lg:flex-nowrap">
             {categories.map((category) => (
               <Link
                 key={category.id}
                 href={`/productos?categoria=${category.id}`}
-                className="inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-border/70 bg-background px-4 text-center text-sm font-medium text-foreground/75 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:text-primary hover:shadow-md"
+                className="inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap px-2 text-center text-xs font-medium text-white transition-colors duration-200 hover:text-white/70"
                 title={category.name}
               >
                 <span>{category.name}</span>
