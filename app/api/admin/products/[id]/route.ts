@@ -70,7 +70,6 @@ export async function PATCH(req: Request, { params }: Params) {
       price: Number(price),
       subcategory: validSubcategory,
       image: image || null,
-      updated_at: new Date().toISOString(),
     }
 
     const { data, error } = await supabaseServer.from("products").update(payload).eq("id", id).select()
