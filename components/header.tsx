@@ -208,52 +208,6 @@ export function Header() {
       <nav className="hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-3">
-            <div className="group relative after:absolute after:left-0 after:top-full after:h-4 after:w-full after:content-['']">
-              <Link
-                href="/productos"
-                className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-              >
-                <span>Todas las Categorías</span>
-                <span className="text-[10px]">▼</span>
-              </Link>
-
-              {categories.length > 0 && (
-                <div className="pointer-events-none invisible absolute left-0 top-full z-50 mt-0 w-[min(760px,calc(100vw-2rem))] translate-y-1 rounded-3xl border border-border bg-background/98 p-4 opacity-0 shadow-2xl backdrop-blur transition-all duration-200 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
-                  <div className="mb-3 flex items-center justify-between gap-4 border-b border-border pb-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                        Categorías
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Explorá todos los grupos disponibles
-                      </p>
-                    </div>
-                    <Link
-                      href="/productos"
-                      className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      Todos los productos
-                    </Link>
-                  </div>
-
-                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    {categories.map((category) => (
-                      <Link
-                        key={category.id}
-                        href={`/productos?categoria=${category.id}`}
-                        className="group flex items-center justify-between rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm font-medium text-foreground/80 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
-                      >
-                        <span>{category.name}</span>
-                        <span className="text-xs text-muted-foreground transition-colors group-hover:text-primary">
-                          Ver
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             <div className="hidden flex-wrap items-center justify-center gap-2 lg:flex">
               {categories.map((category) => (
                 <Link
