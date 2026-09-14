@@ -63,11 +63,11 @@ export function CartContent() {
                       <div>
                         <Link
                           href={`/productos/${item.product.id}`}
-                          className="font-medium text-foreground hover:text-primary"
+                          className="text-base font-semibold text-foreground hover:text-primary"
                         >
                           {item.product.name}
                         </Link>
-                        <p className="mt-1 text-sm text-muted-foreground">
+                        <p className="mt-1 font-mono text-sm font-light text-muted-foreground">
                           {formatPrice(item.product.price)} c/u
                         </p>
                       </div>
@@ -96,7 +96,7 @@ export function CartContent() {
                           <Minus className="h-3 w-3" />
                           <span className="sr-only">Disminuir</span>
                         </Button>
-                        <span className="w-8 text-center text-sm font-medium">
+                        <span className="w-8 text-center font-mono text-sm font-light">
                           {item.quantity}
                         </span>
                         <Button
@@ -111,7 +111,7 @@ export function CartContent() {
                           <span className="sr-only">Aumentar</span>
                         </Button>
                       </div>
-                      <p className="font-semibold text-foreground">
+                      <p className="font-mono font-light text-foreground">
                         {formatPrice(item.product.price * item.quantity)}
                       </p>
                     </div>
@@ -140,7 +140,7 @@ export function CartContent() {
                     : "productos"}
                   )
                 </span>
-                <span className="text-foreground">{formatPrice(getTotal())}</span>
+                <span className="font-mono font-light text-foreground">{formatPrice(getTotal())}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Envío</span>
@@ -152,7 +152,7 @@ export function CartContent() {
 
             <div className="flex justify-between">
               <span className="text-lg font-semibold text-foreground">Total</span>
-              <span className="text-lg font-semibold text-foreground">
+              <span className="font-mono text-lg font-light text-foreground">
                 {formatPrice(getTotal())}
               </span>
             </div>

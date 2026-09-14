@@ -31,8 +31,8 @@ export function ProductCard({ product }: ProductCardProps) {
           ) : null}
 
           {quantityInCart > 0 && (
-            <div className="absolute right-2 top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-2 text-xs font-bold text-primary-foreground shadow-lg">
-              {quantityInCart}
+            <div className="absolute right-2 top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-2 text-xs text-primary-foreground shadow-lg">
+              <span className="font-mono font-light">{quantityInCart}</span>
             </div>
           )}
 
@@ -47,17 +47,17 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
       <CardContent className="p-4">
         <Link href={`/productos/${product.id}`}>
-          <h3 className="line-clamp-2 text-sm font-medium text-foreground transition-colors hover:text-primary">
+          <h3 className="line-clamp-2 text-base font-semibold text-foreground transition-colors hover:text-primary">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1 text-lg font-semibold text-foreground">
+        <p className="mt-1 font-mono text-lg font-light text-foreground">
           {formatPrice(product.price)}
         </p>
 
         {quantityInCart > 0 && (
           <p className="mt-2 text-xs font-medium text-primary">
-            En carrito: {quantityInCart}
+            En carrito: <span className="font-mono font-light">{quantityInCart}</span>
           </p>
         )}
 

@@ -73,7 +73,7 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
             {product.name}
           </h1>
 
-          <p className="mt-4 text-2xl font-semibold text-foreground">
+          <p className="mt-4 font-mono text-2xl font-light text-foreground">
             {formatPrice(product.price)}
           </p>
 
@@ -105,7 +105,7 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
                   <Minus className="h-4 w-4" />
                   <span className="sr-only">Disminuir cantidad</span>
                 </Button>
-                <span className="w-12 text-center text-lg font-medium">
+                <span className="w-12 text-center font-mono text-lg font-light">
                   {quantity}
                 </span>
                 <Button
@@ -144,7 +144,7 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
 
           {quantityInCart > 0 && (
             <p className="mt-3 text-sm font-medium text-primary">
-              Ya tenés {quantityInCart} unidad{quantityInCart > 1 ? "es" : ""} en el carrito.
+              Ya tenés <span className="font-mono font-light">{quantityInCart}</span> unidad{quantityInCart > 1 ? "es" : ""} en el carrito.
             </p>
           )}
 

@@ -177,7 +177,7 @@ export function Header() {
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
                   <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
-                    {itemCount}
+                    <span className="font-mono font-light">{itemCount}</span>
                   </span>
                 )}
                 <span className="sr-only">Carrito de compras</span>

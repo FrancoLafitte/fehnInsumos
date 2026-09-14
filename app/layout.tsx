@@ -1,21 +1,17 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Julius_Sans_One } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CartProvider } from '@/context/cart-context'
 import { AppShell } from '@/components/app-shell'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const _julius = Julius_Sans_One({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: 'FEHN | Insumos para Cerámica',
   description: 'Tu tienda de insumos para cerámica con catálogo completo por categorías. Enviamos a todo el país.',
   keywords: ['cerámica', 'arcilla', 'esmaltes', 'herramientas cerámica', 'categorías cerámica', 'catálogo cerámica'],
   generator: 'v0.app',
-  other: {
-    'google-site-verification': 'XZ0iCMhE8M8wUr6OVt4jWVSbMn9LUm2hlXcWtluCWYI',
-  },
   icons: {
     icon: '/images/favicon.ico',
     shortcut: '/images/fhenLogo.png',
@@ -30,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="bg-background">
-      <body className="font-sans antialiased">
+      <body className={`${_julius.className} font-sans antialiased`}>
         <CartProvider>
           <AppShell>{children}</AppShell>
         </CartProvider>
