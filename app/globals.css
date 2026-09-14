@@ -124,3 +124,20 @@
     background-image: radial-gradient(circle at top, rgba(255,255,255,0.26), transparent 24%), linear-gradient(180deg, #f5e0ce 0%, #efe0cf 100%);
   }
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar-thumb,
+.scrollbar-hide::-webkit-scrollbar-track {
+  background: transparent;
+}

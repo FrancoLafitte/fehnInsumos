@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { ShoppingCart, Menu, X, UserRound } from "lucide-react"
+import { ShoppingCart, Menu, X, UserRound, ChevronLeft, ChevronRight } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useCart } from "@/context/cart-context"
@@ -26,6 +26,8 @@ export function Header() {
   const [categories, setCategories] = useState<Category[]>([])
   const [session, setSession] = useState<any>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const categoriesScrollRef = useRef<HTMLDivElement | null>(null)
+  const categoriesAnimationRef = useRef<number | null>(null)
   const itemCount = getItemCount()
 
   useEffect(() => {
@@ -86,6 +88,39 @@ export function Header() {
   async function handleLogout() {
     setMenuOpen(false)
     await supabaseBrowser.auth.signOut()
+  }
+
+  function scrollCategories(direction: "left" | "right") {
+    const container = categoriesScrollRef.current
+
+    if (!container) return
+
+    if (categoriesAnimationRef.current !== null) {
+      cancelAnimationFrame(categoriesAnimationRef.current)
+    }
+
+    const start = container.scrollLeft
+    const distance = direction === "right" ? 140 : -140
+    const target = Math.max(0, Math.min(start + distance, container.scrollWidth - container.clientWidth))
+    const duration = 550
+    const startTime = performance.now()
+
+    const animate = (currentTime: number) => {
+      const progress = Math.min((currentTime - startTime) / duration, 1)
+      const easedProgress = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2
+
+      container.scrollLeft = start + (target - start) * easedProgress
+
+      if (progress < 1) {
+        categoriesAnimationRef.current = requestAnimationFrame(animate)
+      } else {
+        categoriesAnimationRef.current = null
+      }
+    }
+
+    categoriesAnimationRef.current = requestAnimationFrame(animate)
   }
 
   return (
@@ -209,20 +244,36 @@ export function Header() {
       {/* Navigation bar */}
       {pathname !== "/productos" && (
       <nav className="hidden border-t border-[#7a4c31]/25 bg-[#c98b57]/65 lg:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-3">
-            <div className="hidden flex-wrap items-center justify-center gap-2 lg:flex">
+        <div className="relative mx-auto max-w-7xl px-12 py-3 sm:px-14 lg:px-16">
+          <button
+            type="button"
+            aria-label="Desplazar categorías hacia la izquierda"
+            onClick={() => scrollCategories("left")}
+            className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-border/70 bg-background text-foreground shadow-sm transition-colors hover:bg-muted hover:text-primary"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <div ref={categoriesScrollRef} className="scrollbar-hide overflow-x-hidden scroll-smooth">
+            <div className="flex min-w-max items-center justify-center gap-2 lg:flex-nowrap">
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   href={`/productos?categoria=${category.id}`}
-                  className="inline-flex h-10 items-center rounded-full border border-border/70 bg-background px-4 text-sm font-medium text-foreground/75 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:text-primary hover:shadow-md"
+                  className="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-border/70 bg-background px-4 text-sm font-medium text-foreground/75 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:text-primary hover:shadow-md"
                 >
                   {category.name}
                 </Link>
               ))}
             </div>
           </div>
+          <button
+            type="button"
+            aria-label="Desplazar categorías hacia la derecha"
+            onClick={() => scrollCategories("right")}
+            className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-border/70 bg-background text-foreground shadow-sm transition-colors hover:bg-muted hover:text-primary"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
       </nav>
       )}
