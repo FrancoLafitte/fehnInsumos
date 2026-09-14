@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import supabaseServer from "@/lib/supabaseServer"
 import { normalizeUserMessage } from "@/lib/es-messages"
+import { getNextCatalogId } from "@/lib/next-catalog-id"
 
 export async function GET() {
   try {
@@ -22,11 +23,13 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { id, name, description, image } = body
+    const { name, description, image } = body
 
-    if (!id || !name) {
-      return NextResponse.json({ error: "Faltan campos obligatorios (id, name)" }, { status: 400 })
+    if (!name) {
+      return NextResponse.json({ error: "Falta el nombre de la categoría principal" }, { status: 400 })
     }
+
+    const id = await getNextCatalogId(["categoriaprincipal", "categoriaPrincipal"])
 
     const { data, error } = await supabaseServer
       .from("categoriaprincipal")

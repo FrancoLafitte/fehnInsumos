@@ -70,7 +70,6 @@ export default function NewProductPage() {
 
     try {
       const payload = {
-        id: form.id || undefined,
         name: form.name,
         description: form.description,
         price: Number(form.price || 0),
@@ -119,12 +118,6 @@ export default function NewProductPage() {
 
       <form onSubmit={onSubmit} className="space-y-5 rounded-2xl border bg-white p-5 shadow-sm">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1">
-            <label htmlFor="id" className="block text-sm font-medium text-slate-700">ID del producto</label>
-            <input id="id" name="id" value={form.id} onChange={onChange} placeholder="arc-010" className="block w-full rounded-lg border px-3 py-2" />
-            <p className="text-xs text-slate-500">Opcional, pero útil para identificarlo rápido.</p>
-          </div>
-
           <div className="space-y-1">
             <label htmlFor="price" className="block text-sm font-medium text-slate-700">Precio</label>
             <input id="price" name="price" value={form.price} onChange={onChange} required type="number" min="0" className="block w-full rounded-lg border px-3 py-2" />

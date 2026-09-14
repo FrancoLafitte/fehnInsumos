@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { requireAdminSession } from "@/lib/admin-auth"
 import supabaseServer from "@/lib/supabaseServer"
 import { normalizeUserMessage } from "@/lib/es-messages"
+import { getNextCatalogId } from "@/lib/next-catalog-id"
 
 export async function GET() {
   try {
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { id, name, description, price, subcategory, image } = body
+    const { name, description, price, subcategory, image } = body
 
     if (!name || price == null) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
     }
 
     const product = {
-      id: id || undefined,
+      id: await getNextCatalogId(["products"]),
       name,
       description: description || null,
       price: Number(price),

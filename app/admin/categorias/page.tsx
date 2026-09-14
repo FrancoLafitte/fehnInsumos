@@ -96,7 +96,9 @@ export default function CategoriesAdminPage() {
       const endpoint = editingId ? `/api/admin/categories/${editingId}` : "/api/admin/categories"
       const method = editingId ? "PATCH" : "POST"
       const body = {
-        ...form,
+        name: form.name,
+        description: form.description,
+        image: form.image,
         categoria_principal_id: form.categoria_principal_id || null,
       }
 
@@ -163,10 +165,10 @@ export default function CategoriesAdminPage() {
       {editingId && <div className="mb-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm">Editando <strong>{editingId}</strong></div>}
 
       <form onSubmit={onSubmit} className="mb-6 space-y-4 rounded-2xl border bg-white p-5 shadow-sm">
-        <div>
+        {editingId && <div>
           <label htmlFor="id" className="block text-sm font-medium text-slate-700">ID (slug)</label>
-          <input id="id" name="id" value={form.id} onChange={onChange} required disabled={Boolean(editingId)} className="mt-1 block w-full rounded-lg border px-3 py-2 disabled:opacity-60" />
-        </div>
+          <input id="id" name="id" value={form.id} readOnly disabled className="mt-1 block w-full rounded-lg border px-3 py-2 disabled:opacity-60" />
+        </div>}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-slate-700">Nombre</label>
           <input id="name" name="name" value={form.name} onChange={onChange} required className="mt-1 block w-full rounded-lg border px-3 py-2" />
