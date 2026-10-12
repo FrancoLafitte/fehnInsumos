@@ -177,7 +177,7 @@ export default function NewProductPage() {
           {form.images && (
             <div className="mt-3 flex flex-wrap gap-2">
               {form.images.split(",").map((img, index) => img.trim()).filter(Boolean).slice(0, 4).map((img, index) => (
-                <img key={`${img}-${index}`} src={img} alt={`Preview ${index + 1}`} className="h-16 w-16 rounded object-cover border" />
+                <img key={`${img}-${index}`} src={img} alt={`Preview ${index + 1}`} className="h-16 w-16 rounded border object-contain p-1" />
               ))}
             </div>
           )}

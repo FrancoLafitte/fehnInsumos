@@ -26,7 +26,7 @@ export function ProductCard({ product }: ProductCardProps) {
               src={product.image}
               alt={product.name}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-contain p-3"
             />
           ) : null}
 

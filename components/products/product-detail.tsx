@@ -46,7 +46,7 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover"
+            className="object-contain p-4"
             priority
           />
           {!product.inStock && (

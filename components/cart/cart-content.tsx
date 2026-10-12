@@ -48,7 +48,7 @@ export function CartContent() {
                         src={item.product.image}
                         alt={item.product.name}
                         fill
-                        className="object-cover"
+                        className="object-contain p-1"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-slate-100 text-[10px] font-medium uppercase tracking-wide text-slate-500">

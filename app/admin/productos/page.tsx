@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { normalizeUserMessage } from "@/lib/es-messages"
 
 type Product = {
@@ -22,6 +22,8 @@ type SubcategoryOption = {
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [subcategories, setSubcategories] = useState<SubcategoryOption[]>([])
+  const [nameFilter, setNameFilter] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState("")
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
@@ -88,6 +90,25 @@ export default function AdminProductsPage() {
     fetchProducts()
     fetchSubcategories()
   }, [])
+
+  const filteredProducts = useMemo(() => {
+    const normalizedName = nameFilter.trim().toLocaleLowerCase()
+
+    if (!normalizedName && !categoryFilter) {
+      return []
+    }
+
+    return products.filter((product) => {
+      const matchesName =
+        !normalizedName || product.name.toLocaleLowerCase().includes(normalizedName)
+      const matchesCategory =
+        !categoryFilter ||
+        product.subcategory === categoryFilter ||
+        product.category === categoryFilter
+
+      return matchesName && matchesCategory
+    })
+  }, [categoryFilter, nameFilter, products])
 
   function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const { name, value } = e.target
@@ -230,7 +251,7 @@ export default function AdminProductsPage() {
             </div>
             {form.image && (
               <div className="mt-3">
-                <img src={form.image} alt="Previsualización" className="h-20 w-20 rounded object-cover border" />
+                <img src={form.image} alt="Previsualización" className="h-20 w-20 rounded border object-contain p-1" />
               </div>
             )}
           </div>
@@ -255,15 +276,78 @@ export default function AdminProductsPage() {
 
       {message && <div className="mb-4 rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">{message}</div>}
 
+      <div className="mb-4 rounded-2xl border bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex-1">
+            <label htmlFor="product-search" className="block text-sm font-medium text-slate-700">
+              Buscar por nombre
+            </label>
+            <input
+              id="product-search"
+              type="search"
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              placeholder="Ej.: Arcilla, esmalte..."
+              className="mt-1 block w-full rounded-lg border px-3 py-2"
+            />
+          </div>
+
+          <div className="flex-1">
+            <label htmlFor="product-category-filter" className="block text-sm font-medium text-slate-700">
+              Filtrar por categoría
+            </label>
+            <select
+              id="product-category-filter"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="mt-1 block w-full rounded-lg border bg-white px-3 py-2"
+            >
+              <option value="">Todas las categorías</option>
+              {subcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {(nameFilter || categoryFilter) && (
+            <div className="flex items-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setNameFilter("")
+                  setCategoryFilter("")
+                }}
+                className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          )}
+        </div>
+        <p className="mt-3 text-sm text-slate-500">
+          Mostrando {filteredProducts.length} de {products.length} productos
+        </p>
+      </div>
+
       <div className="space-y-3">
         {products.length === 0 ? (
           <div className="rounded-2xl border bg-white p-5 text-sm text-slate-600 shadow-sm">No hay productos cargados.</div>
+        ) : !nameFilter.trim() && !categoryFilter ? (
+          <div className="rounded-2xl border bg-white p-5 text-sm text-slate-600 shadow-sm">
+            Usá los filtros para buscar productos.
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="rounded-2xl border bg-white p-5 text-sm text-slate-600 shadow-sm">
+            No se encontraron productos con los filtros seleccionados.
+          </div>
         ) : (
-          products.map((product) => (
+          filteredProducts.map((product) => (
             <div key={product.id} className="flex flex-col gap-3 rounded-2xl border bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3">
                 {product.image ? (
-                  <img src={product.image} alt={product.name} className="h-16 w-16 rounded object-cover" />
+                  <img src={product.image} alt={product.name} className="h-16 w-16 rounded object-contain p-1" />
                 ) : (
                   <div className="flex h-16 w-16 items-center justify-center rounded bg-slate-100 text-xs text-slate-500">Sin imagen</div>
                 )}
