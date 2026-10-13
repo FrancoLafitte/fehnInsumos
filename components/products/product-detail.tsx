@@ -76,9 +76,11 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
 
           <div className="mt-6">
             <h2 className="text-sm font-medium text-foreground">Descripción</h2>
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-              {product.description}
-            </p>
+            <div className="mt-2 max-h-80 overflow-y-auto rounded-lg border border-border/70 bg-background/40 p-4">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                {product.description}
+              </p>
+            </div>
           </div>
 
           {/* Availability */}
