@@ -33,7 +33,7 @@ export default function AdminProductsPage() {
     description: "",
     price: "",
     subcategory: "",
-    image: "",
+    images: "",
   })
   const [message, setMessage] = useState<string | null>(null)
 
@@ -55,7 +55,7 @@ export default function AdminProductsPage() {
       const json = await res.json()
       if (!res.ok) throw new Error(json?.error || "No se pudo subir la imagen")
 
-      setForm((s) => ({ ...s, image: json.url }))
+      setForm((s) => ({ ...s, images: s.images ? `${s.images}, ${json.url}` : json.url }))
       setMessage("Imagen subida correctamente.")
     } catch (err: any) {
       setMessage(normalizeUserMessage(err?.message, "No se pudo subir la imagen."))
@@ -123,7 +123,7 @@ export default function AdminProductsPage() {
       description: product.description || "",
       price: String(product.price),
       subcategory: product.subcategory || product.category || "",
-      image: product.image || "",
+      images: product.image || "",
     })
     setMessage(null)
   }
@@ -149,7 +149,11 @@ export default function AdminProductsPage() {
           description: form.description,
           price: Number(form.price),
           subcategory: form.subcategory || null,
-          image: form.image || null,
+          image: form.images
+            .split(",")
+            .map((image) => image.trim())
+            .filter(Boolean)
+            .join(", ") || null,
         }),
       })
 
@@ -158,7 +162,7 @@ export default function AdminProductsPage() {
 
       setMessage("Producto actualizado correctamente.")
       setEditingId(null)
-      setForm({ id: "", name: "", description: "", price: "", subcategory: "", image: "" })
+      setForm({ id: "", name: "", description: "", price: "", subcategory: "", images: "" })
       await fetchProducts()
     } catch (err: any) {
       setMessage(normalizeUserMessage(err?.message, "No se pudo actualizar el producto."))
@@ -180,7 +184,7 @@ export default function AdminProductsPage() {
       setMessage("Producto eliminado correctamente.")
       if (editingId === id) {
         setEditingId(null)
-        setForm({ id: "", name: "", description: "", price: "", subcategory: "", image: "" })
+        setForm({ id: "", name: "", description: "", price: "", subcategory: "", images: "" })
       }
       await fetchProducts()
     } catch (err: any) {
@@ -230,13 +234,13 @@ export default function AdminProductsPage() {
           </div>
 
           <div>
-            <label htmlFor="image" className="block text-sm font-medium text-slate-700">Imagen</label>
+            <label htmlFor="images" className="block text-sm font-medium text-slate-700">Imágenes</label>
             <input
-              id="image"
-              name="image"
-              value={form.image}
+              id="images"
+              name="images"
+              value={form.images}
               onChange={onChange}
-              placeholder="URL de la imagen o subí una desde tu PC"
+              placeholder="URL1, URL2, URL3 o subí imágenes desde tu PC"
               className="mt-1 block w-full rounded-lg border px-3 py-2"
             />
             <div className="mt-2 flex items-center gap-3">
@@ -249,11 +253,14 @@ export default function AdminProductsPage() {
               />
               {uploadingImage && <span className="text-sm text-slate-500">Subiendo...</span>}
             </div>
-            {form.image && (
-              <div className="mt-3">
-                <img src={form.image} alt="Previsualización" className="h-20 w-20 rounded border object-contain p-1" />
+            {form.images && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {form.images.split(",").map((image) => image.trim()).filter(Boolean).map((image, index) => (
+                  <img key={`${image}-${index}`} src={image} alt={`Previsualización ${index + 1}`} className="h-20 w-20 rounded border object-contain p-1" />
+                ))}
               </div>
             )}
+            <p className="mt-2 text-xs text-slate-500">Separá múltiples imágenes con coma. Las nuevas imágenes se agregan a las existentes.</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -264,7 +271,7 @@ export default function AdminProductsPage() {
               type="button"
               onClick={() => {
                 setEditingId(null)
-                setForm({ id: "", name: "", description: "", price: "", subcategory: "", image: "" })
+                setForm({ id: "", name: "", description: "", price: "", subcategory: "", images: "" })
               }}
               className="rounded-lg border px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
             >

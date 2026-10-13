@@ -15,6 +15,13 @@ type ProductRow = {
   in_stock: boolean | null
 }
 
+function parseProductImages(image: string | null): string[] {
+  return (image ?? "")
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean)
+}
+
 function mapProduct(row: ProductRow): Product | null {
   const categoryValue = row.category ?? row.subcategory ?? row.subcategory_id ?? row.subcategorias_id ?? null
 
@@ -22,13 +29,16 @@ function mapProduct(row: ProductRow): Product | null {
     return null
   }
 
+  const images = parseProductImages(row.image)
+
   return {
     id: row.id,
     name: row.name,
     description: row.description ?? "",
     price: Number(row.price),
     category: categoryValue,
-    image: row.image ?? "",
+    image: images[0] ?? "",
+    images,
     inStock: row.in_stock ?? true,
   }
 }

@@ -5,6 +5,18 @@ import { normalizeUserMessage } from "@/lib/es-messages"
 
 type Params = { params: Promise<{ id: string }> }
 
+function parseImageUrls(image: string | null): string[] {
+  return (image ?? "")
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean)
+}
+
+function getStoragePath(imageUrl: string): string | null {
+  const match = imageUrl.match(/\/storage\/v1\/object\/public\/.+?\/(.+)$/)
+  return match?.[1] ? decodeURIComponent(match[1]) : null
+}
+
 export async function PATCH(req: Request, { params }: Params) {
   try {
     const user = await requireAdminSession()
@@ -30,19 +42,21 @@ export async function PATCH(req: Request, { params }: Params) {
       return NextResponse.json({ error: normalizeUserMessage(currentProductError.message, "No se pudo identificar la imagen actual del producto.") }, { status: 500 })
     }
 
-    const previousImageUrl = currentProduct?.image
-    const nextImageUrl = image || null
+    const previousImageUrls = parseImageUrls(currentProduct?.image ?? null)
+    const nextImageUrls = parseImageUrls(image || null)
 
-    if (previousImageUrl && nextImageUrl && previousImageUrl !== nextImageUrl) {
+    if (previousImageUrls.length > 0) {
       const bucket = process.env.SUPABASE_UPLOAD_BUCKET || "product-images"
-      const previousMatch = previousImageUrl.match(/\/storage\/v1\/object\/public\/.+?\/(.+)$/)
+      const removedImagePaths = previousImageUrls
+        .filter((previousImageUrl) => !nextImageUrls.includes(previousImageUrl))
+        .map(getStoragePath)
+        .filter((path): path is string => path !== null)
 
-      if (previousMatch?.[1]) {
-        const previousPath = decodeURIComponent(previousMatch[1])
-        const { error: removePreviousError } = await supabaseServer.storage.from(bucket).remove([previousPath])
+      if (removedImagePaths.length > 0) {
+        const { error: removePreviousError } = await supabaseServer.storage.from(bucket).remove(removedImagePaths)
 
         if (removePreviousError) {
-          console.error("No se pudo eliminar la imagen previa del storage:", removePreviousError)
+          console.error("No se pudieron eliminar las imágenes previas del storage:", removePreviousError)
         }
       }
     }
@@ -103,17 +117,18 @@ export async function DELETE(_: Request, { params }: Params) {
       return NextResponse.json({ error: normalizeUserMessage(productFetchError.message, "No se pudo obtener el producto a eliminar.") }, { status: 500 })
     }
 
-    const imageUrl = productData?.image
-    if (imageUrl) {
+    const imageUrls = parseImageUrls(productData?.image ?? null)
+    if (imageUrls.length > 0) {
       const bucket = process.env.SUPABASE_UPLOAD_BUCKET || "product-images"
-      const storageMatch = imageUrl.match(/\/storage\/v1\/object\/public\/.+?\/(.+)$/)
+      const objectPaths = imageUrls
+        .map(getStoragePath)
+        .filter((path): path is string => path !== null)
 
-      if (storageMatch?.[1]) {
-        const objectPath = decodeURIComponent(storageMatch[1])
-        const { error: deleteStorageError } = await supabaseServer.storage.from(bucket).remove([objectPath])
+      if (objectPaths.length > 0) {
+        const { error: deleteStorageError } = await supabaseServer.storage.from(bucket).remove(objectPaths)
 
         if (deleteStorageError) {
-          console.error("No se pudo eliminar la imagen del storage:", deleteStorageError)
+          console.error("No se pudieron eliminar las imágenes del storage:", deleteStorageError)
         }
       }
     }

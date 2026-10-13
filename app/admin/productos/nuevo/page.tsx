@@ -74,7 +74,11 @@ export default function NewProductPage() {
         description: form.description,
         price: Number(form.price || 0),
         subcategory: form.category,
-        image: form.images.split(",")[0]?.trim() || null,
+        image: form.images
+          .split(",")
+          .map((image) => image.trim())
+          .filter(Boolean)
+          .join(", ") || null,
       }
 
       const res = await fetch("/api/admin/products", {

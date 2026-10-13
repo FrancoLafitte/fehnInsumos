@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { ArrowLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react"
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useCart } from "@/context/cart-context"
 import { formatPrice } from "@/lib/products"
 import type { Product } from "@/lib/types"
+import { ProductImageCarousel } from "./product-image-carousel"
 
 interface ProductDetailProps {
   product: Product
@@ -41,16 +41,13 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         {/* Product Image */}
-        <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-contain p-4"
-            priority
+        <div className="relative">
+          <ProductImageCarousel
+            images={product.images.length > 0 ? product.images : [product.image].filter(Boolean)}
+            productName={product.name}
           />
           {!product.inStock && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+            <div className="absolute inset-x-0 top-0 z-10 flex aspect-square items-center justify-center rounded-lg bg-background/80">
               <span className="text-lg font-medium text-muted-foreground">
                 Sin stock
               </span>
@@ -79,7 +76,7 @@ export function ProductDetail({ product, categoryName }: ProductDetailProps) {
 
           <div className="mt-6">
             <h2 className="text-sm font-medium text-foreground">Descripción</h2>
-            <p className="mt-2 leading-relaxed text-muted-foreground">
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
               {product.description}
             </p>
           </div>
