@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { X } from "lucide-react"
 import { normalizeUserMessage } from "@/lib/es-messages"
 
 type Product = {
@@ -113,6 +114,18 @@ export default function AdminProductsPage() {
   function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const { name, value } = e.target
     setForm((s) => ({ ...s, [name]: value }))
+  }
+
+  function removeImage(indexToRemove: number) {
+    setForm((currentForm) => ({
+      ...currentForm,
+      images: currentForm.images
+        .split(",")
+        .map((image) => image.trim())
+        .filter(Boolean)
+        .filter((_, index) => index !== indexToRemove)
+        .join(", "),
+    }))
   }
 
   function startEdit(product: Product) {
@@ -256,7 +269,17 @@ export default function AdminProductsPage() {
             {form.images && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {form.images.split(",").map((image) => image.trim()).filter(Boolean).map((image, index) => (
-                  <img key={`${image}-${index}`} src={image} alt={`Previsualización ${index + 1}`} className="h-20 w-20 rounded border object-contain p-1" />
+                  <div key={`${image}-${index}`} className="relative">
+                    <img src={image} alt={`Previsualización ${index + 1}`} className="h-20 w-20 rounded border object-contain p-1" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      aria-label={`Quitar imagen ${index + 1}`}
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white shadow transition hover:bg-red-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
